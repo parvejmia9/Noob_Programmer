@@ -32,7 +32,7 @@ void sparsh(int n) { // creating sparsh table
 		}
 	}
 }
-int lca(int u, int v) { //finding lca
+int lca(int u, int v) { //finding lca -- n up to 5*10^5
 	if (lev[u] < lev[v]) swap(u, v);
 	for (int j = 19; j >= 0; j--) {
 		if ((lev[u] - (1 << j)) >= lev[v]) {
