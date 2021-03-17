@@ -53,6 +53,11 @@ vector<int> suff_array_build(string s) {
 	return p;
 }
 // this will return the lpc array of (i,i+1) i->0....n-1
+// but if we want lcp(i,j) where lcp(i,j) means lcp of p[i] suffix and p[j] suffix;
+// then we have to find the min(lcp[i] to lcp[j-1])  j>i; we can use rmq;
+// if the problem if we nedd only lcp array we will use O(n) implementation of lcp array;
+// else we will use the nlog(n) implementation
+
 vector<int> lcp_array(string const& s, vector<int> const& p) {
 	int n = s.size();
 	vector<int> rnk(n, 0);
