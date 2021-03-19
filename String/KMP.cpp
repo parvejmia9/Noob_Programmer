@@ -1,6 +1,9 @@
 
 
-vector<int> prefix_function(string &s) { // lps array 
+vector<int> prefix_function(string &s) { // lps array
+	
+	/// HERE s IS THE PATTERN NOT THE MAIN STRING///
+	
 	int n = s.size();
 	vector<int> lps(n);
 	lps[0] = 0;
