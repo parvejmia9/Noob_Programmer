@@ -206,16 +206,10 @@ vector<int> polysub(vector<int> a, vector<int> b) {
     return res;
 }
 vector<bool> polypow(vector<bool> a, int k) {
-    if (k == 0) {
-        return {1};
-    }
-    vector<bool>tm;
-    if (k % 2 == 0) {
-        tm = polypow(a, k / 2);
-        tm = FFT::convolution(tm, tm);
-    }
-    else {
-        tm = polypow(a, k - 1);
+    if (k == 0) return {1};
+    vector<bool>tm = polypow(a, k / 2);
+    tm = FFT::convolution(tm, tm);
+    if (k % 2) {
         tm = FFT::convolution(tm, a);
     }
     return tm;
