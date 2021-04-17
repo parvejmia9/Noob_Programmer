@@ -54,112 +54,172 @@ double PI = acos(0) * 2;
 
 class Complex { //  C must be in uppercase
 public:
-	double a, b;
-	Complex() {a = 0.0; b = 0.0;}
-	Complex(double na, double nb) {a = na; b = nb;}
-	const Complex operator+(const Complex &c) const
-	{return Complex(a + c.a, b + c.b);}
-	const Complex operator-(const Complex &c) const
-	{return Complex(a - c.a, b - c.b);}
-	const Complex operator*(const Complex &c) const
-	{return Complex(a * c.a - b * c.b, a * c.b + b * c.a);}
-	double magnitude() {return sqrt(a * a + b * b);}
-	void print() {printf("(%.3f %.3f)\n", a, b);}
+    double a, b;
+    Complex() {a = 0.0; b = 0.0;}
+    Complex(double na, double nb) {a = na; b = nb;}
+    const Complex operator+(const Complex &c) const
+    {return Complex(a + c.a, b + c.b);}
+    const Complex operator-(const Complex &c) const
+    {return Complex(a - c.a, b - c.b);}
+    const Complex operator*(const Complex &c) const
+    {return Complex(a * c.a - b * c.b, a * c.b + b * c.a);}
+    double magnitude() {return sqrt(a * a + b * b);}
+    void print() {printf("(%.3f %.3f)\n", a, b);}
 };
 
 class FFT {
 public:
-	vector<Complex> data;
-	vector<Complex> roots;
-	VI rev;
-	int s, n;
+    vector<Complex> data;
+    vector<Complex> roots;
+    VI rev;
+    int s, n;
 
-	void setSize(int ns) {
-		s = ns;
-		n = (1 << s);
-		int i, j;
-		rev = VI(n);
-		data = vector<Complex> (n);
-		roots = vector<Complex> (n + 1);
-		for (i = 0; i < n; i++)
-			for (j = 0; j < s; j++)
-				if ((i & (1 << j)) != 0)
-					rev[i] += (1 << (s - j - 1));
-		roots[0] = Complex(1, 0);
-		Complex mult = Complex(cos(2 * PI / n), sin(2 * PI / n));
-		for (i = 1; i <= n; i++)
-			roots[i] = roots[i - 1] * mult;
-	}
+    void setSize(int ns) {
+        s = ns;
+        n = (1 << s);
+        int i, j;
+        rev = VI(n);
+        data = vector<Complex> (n);
+        roots = vector<Complex> (n + 1);
+        for (i = 0; i < n; i++)
+            for (j = 0; j < s; j++)
+                if ((i & (1 << j)) != 0)
+                    rev[i] += (1 << (s - j - 1));
+        roots[0] = Complex(1, 0);
+        Complex mult = Complex(cos(2 * PI / n), sin(2 * PI / n));
+        for (i = 1; i <= n; i++)
+            roots[i] = roots[i - 1] * mult;
+    }
 
-	void bitReverse(vector<Complex> &array) {
-		vector<Complex> temp(n);
-		int i;
-		for (i = 0; i < n; i++)
-			temp[i] = array[rev[i]];
-		for (i = 0; i < n; i++)
-			array[i] = temp[i];
-	}
+    void bitReverse(vector<Complex> &array) {
+        vector<Complex> temp(n);
+        int i;
+        for (i = 0; i < n; i++)
+            temp[i] = array[rev[i]];
+        for (i = 0; i < n; i++)
+            array[i] = temp[i];
+    }
 
-	void transform(bool inverse = false) {
-		bitReverse(data);
-		int i, j, k;
-		for (i = 1; i <= s; i++) {
-			int m = (1 << i), md2 = m / 2;
-			int start = 0, increment = (1 << (s - i));
-			if (inverse) {
-				start = n;
-				increment *= -1;
-			}
-			Complex t, u;
-			for (k = 0; k < n; k += m) {
-				int index = start;
-				for (j = k; j < md2 + k; j++) {
-					t = roots[index] * data[j + md2];
-					index += increment;
-					data[j + md2] = data[j] - t;
-					data[j] = data[j] + t;
-				}
-			}
-		}
-		if (inverse)
-			for (i = 0; i < n; i++) {
-				data[i].a /= n;
-				data[i].b /= n;
-			}
-	}
+    void transform(bool inverse = false) {
+        bitReverse(data);
+        int i, j, k;
+        for (i = 1; i <= s; i++) {
+            int m = (1 << i), md2 = m / 2;
+            int start = 0, increment = (1 << (s - i));
+            if (inverse) {
+                start = n;
+                increment *= -1;
+            }
+            Complex t, u;
+            for (k = 0; k < n; k += m) {
+                int index = start;
+                for (j = k; j < md2 + k; j++) {
+                    t = roots[index] * data[j + md2];
+                    index += increment;
+                    data[j + md2] = data[j] - t;
+                    data[j] = data[j] + t;
+                }
+            }
+        }
+        if (inverse)
+            for (i = 0; i < n; i++) {
+                data[i].a /= n;
+                data[i].b /= n;
+            }
+    }
+    // need the co efficient
+    // warning: precision errors
+    static VI convolution(VI &a, VI &b) {
+        int alen = a.size(), blen = b.size();
+        int resn = alen + blen - 1; // size of the resulting array
+        int s = 0, i;
+        while ((1 << s) < resn) s++;    // n = 2^s
+        int n = 1 << s; // round up the the nearest power of two
+        FFT pga, pgb;
+        pga.setSize(s); // fill and transform first array
+        for (i = 0; i < alen; i++) pga.data[i] = Complex(a[i], 0);
+        for (i = alen; i < n; i++)  pga.data[i] = Complex(0, 0);
+        pga.transform();
+        pgb.setSize(s); // fill and transform second array
+        for (i = 0; i < blen; i++)  pgb.data[i] = Complex(b[i], 0);
+        for (i = blen; i < n; i++)  pgb.data[i] = Complex(0, 0);
+        pgb.transform();
+        for (i = 0; i < n; i++) pga.data[i] = pga.data[i] * pgb.data[i];
+        pga.transform(true);    // inverse transform
+        VI result = VI (resn);  // round to nearest integer
+        for (i = 0; i < resn; i++)  result[i] = (int) (pga.data[i].a + 0.5);
+        int actualSize = resn - 1;  // find proper size of array
+        while (result[actualSize] == 0)
+            actualSize--;
+        if (actualSize < 0) actualSize = 0;
+        result.resize(actualSize + 1);
+        return result;
+    }
+    // for multiplying only dont't need the co efficient
+    static vector<bool> convolution(vector<bool> &a, vector<bool> &b) {
+        int alen = a.size(), blen = b.size();
+        int resn = alen + blen - 1; // size of the resulting array
+        int s = 0, i;
+        while ((1 << s) < resn) s++;    // n = 2^s
+        int n = 1 << s; // round up the the nearest power of two
 
-	static VI convolution(VI &a, VI &b) {
-		int alen = a.size(), blen = b.size();
-		int resn = alen + blen - 1;	// size of the resulting array
-		int s = 0, i;
-		while ((1 << s) < resn) s++;	// n = 2^s
-		int n = 1 << s;	// round up the the nearest power of two
+        FFT pga, pgb;
+        pga.setSize(s); // fill and transform first array
+        for (i = 0; i < alen; i++) pga.data[i] = Complex(a[i], 0);
+        for (i = alen; i < n; i++)  pga.data[i] = Complex(0, 0);
+        pga.transform();
 
-		FFT pga, pgb;
-		pga.setSize(s);	// fill and transform first array
-		for (i = 0; i < alen; i++) pga.data[i] = Complex(a[i], 0);
-		for (i = alen; i < n; i++)	pga.data[i] = Complex(0, 0);
-		pga.transform();
+        pgb.setSize(s); // fill and transform second array
+        for (i = 0; i < blen; i++)  pgb.data[i] = Complex(b[i], 0);
+        for (i = blen; i < n; i++)  pgb.data[i] = Complex(0, 0);
+        pgb.transform();
 
-		pgb.setSize(s);	// fill and transform second array
-		for (i = 0; i < blen; i++)	pgb.data[i] = Complex(b[i], 0);
-		for (i = blen; i < n; i++)	pgb.data[i] = Complex(0, 0);
-		pgb.transform();
+        for (i = 0; i < n; i++) pga.data[i] = pga.data[i] * pgb.data[i];
+        pga.transform(true);    // inverse transform
+        vector<bool> result = vector<bool> (resn);  // round to nearest integer
+        for (i = 0; i < resn; i++)  result[i] = (int) (pga.data[i].a + 0.5);
 
-		for (i = 0; i < n; i++)	pga.data[i] = pga.data[i] * pgb.data[i];
-		pga.transform(true);	// inverse transform
-		VI result = VI (resn);	// round to nearest integer
-		for (i = 0; i < resn; i++)	result[i] = (int) (pga.data[i].a + 0.5);
-
-		int actualSize = resn - 1;	// find proper size of array
-		while (result[actualSize] == 0)
-			actualSize--;
-		if (actualSize < 0) actualSize = 0;
-		result.resize(actualSize + 1);
-		return result;
-	}
+        int actualSize = resn - 1;  // find proper size of array
+        while (result[actualSize] == 0)
+            actualSize--;
+        if (actualSize < 0) actualSize = 0;
+        result.resize(actualSize + 1);
+        return result;
+    }
 };
-
+vector<int> polyadd(vector<int> a, vector<int> b) {
+    while (a.size() < b.size())a.pb(0);
+    while (b.size() < a.size())b.pb(0);
+    vector<int> res;
+    for (int i = 0; i < a.size(); i++) {
+        res.pb(a[i] + b[i]);
+    }
+    return res;
+}
+vector<int> polysub(vector<int> a, vector<int> b) {
+    while (a.size() < b.size())a.pb(0);
+    while (b.size() < a.size())b.pb(0);
+    vector<int> res;
+    for (int i = 0; i < a.size(); i++) {
+        res.pb(a[i] - b[i]);
+    }
+    return res;
+}
+vector<bool> polypow(vector<bool> a, int k) {
+    if (k == 0) {
+        return {1};
+    }
+    vector<bool>tm;
+    if (k % 2 == 0) {
+        tm = polypow(a, k / 2);
+        tm = FFT::convolution(tm, tm);
+    }
+    else {
+        tm = polypow(a, k - 1);
+        tm = FFT::convolution(tm, a);
+    }
+    return tm;
+}
 int main() {
 	ios::sync_with_stdio(0);
 	cin.tie(0); cout.tie(0);
