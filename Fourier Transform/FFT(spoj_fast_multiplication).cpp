@@ -49,7 +49,7 @@ ll ncr(ll n, ll r) {
 	}
 	return (up * bigmod(down, md - 2, md)) % md;
 }
-typedef vector<int> VI;
+typedef vector<ll> VI;
 double PI = acos(0) * 2;
 
 class Complex { //  C must be in uppercase
@@ -147,7 +147,7 @@ public:
         for (i = 0; i < n; i++) pga.data[i] = pga.data[i] * pgb.data[i];
         pga.transform(true);    // inverse transform
         VI result = VI (resn);  // round to nearest integer
-        for (i = 0; i < resn; i++)  result[i] = (int) (pga.data[i].a + 0.5);
+        for (i = 0; i < resn; i++)  result[i] = (ll) (pga.data[i].a + 0.5);
         int actualSize = resn - 1;  // find proper size of array
         while (result[actualSize] == 0)
             actualSize--;
@@ -187,19 +187,19 @@ public:
         return result;
     }
 };
-vector<int> polyadd(vector<int> a, vector<int> b) {
+vector<ll> polyadd(vector<ll> a, vector<ll> b) {
     while (a.size() < b.size())a.pb(0);
     while (b.size() < a.size())b.pb(0);
-    vector<int> res;
+    vector<ll> res;
     for (int i = 0; i < a.size(); i++) {
         res.pb(a[i] + b[i]);
     }
     return res;
 }
-vector<int> polysub(vector<int> a, vector<int> b) {
+vector<ll> polysub(vector<ll> a, vector<ll> b) {
     while (a.size() < b.size())a.pb(0);
     while (b.size() < a.size())b.pb(0);
-    vector<int> res;
+    vector<ll> res;
     for (int i = 0; i < a.size(); i++) {
         res.pb(a[i] - b[i]);
     }
