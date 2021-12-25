@@ -1,3 +1,5 @@
+// 1 based
+// if 0 based write par[src]=-1;
 vector<pair<ll, ll>> graph[MAXN];
 ll dis[MAXN];
 int par[MAXN];
