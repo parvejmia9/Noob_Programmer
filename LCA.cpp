@@ -1,3 +1,4 @@
+//1 based
 vector<int> graph[sz];
 int par[sz];
 int lev[sz];
