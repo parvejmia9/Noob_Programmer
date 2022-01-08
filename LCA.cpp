@@ -1,10 +1,10 @@
 //1 based
-vector<int> graph[sz];
-int par[sz];
-int lev[sz];
-bool vis[sz];
-int sp[sz][20];
-int dis[sz];
+vector<int> graph[MAXN];
+int par[MAXN];
+int lev[MAXN];
+bool vis[MAXN];
+int sp[MAXN][20];
+int dis[MAXN];
 void dfs(int node, int l , int p) { // finding parents and levels
 	vis[node] = 1;
 	par[node] = p;
@@ -17,7 +17,7 @@ void dfs(int node, int l , int p) { // finding parents and levels
 	}
 }
 void sparsh(int n) { // creating sparsh table
-	for (int i = 0; i < sz; i++) {
+	for (int i = 0; i < MAXN; i++) {
 		for (int j = 0; j < 20; j++) {
 			sp[i][j] = -1;
 		}
