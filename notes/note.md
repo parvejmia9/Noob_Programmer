@@ -16,7 +16,7 @@ void dfs(int x){
                 int id=path.size()-1;
                 while(1){
                     mn=min(mn,cst[path[id]]);
-                    if(path[id]==x) break;
+                    if(path[id]==y) break;
                     id--;
                 }
                 //finding the minimum node cost of each cycle
