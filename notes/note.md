@@ -1,4 +1,4 @@
-<b>Cyle in directed graph</b>
+<b>Cyle in Directed Graph:</b>
 ```cpp
 vector<int>graph[N];
 int cst[N];
@@ -28,3 +28,13 @@ void dfs(int x){
     vis[x]=2;
 }
 ```
+<b>Last Index Checking:</b>
+</br>
+</br>
+let somwhere this loop has executed</br>
+```cpp
+for(int i=0;i<n-1;i++){
+    //something
+}
+```
+*** please check if a[n-1] has any significance to the answer.
