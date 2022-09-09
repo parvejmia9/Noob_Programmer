@@ -38,3 +38,7 @@ for(int i=0;i<n-1;i++){
 }
 ```
 *** please check if a[n-1] has any significance to the answer.
+
+<b> Bitwise Operation:<b>
+    </br>
+    i)  (a^b)&c =(a&c)^(b&c)
