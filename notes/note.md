@@ -42,3 +42,11 @@ for(int i=0;i<n-1;i++){
 <b> Bitwise Operation:<b>
     </br>
     i)  (a^b)&c =(a&c)^(b&c)
+
+    
+    
+</br>
+<b>Increase Stack Size for Codeblocks</b>
+</br>
+seetings->compiler->linker settings->other linker-> "-Wl,--stack,1073741824" for 1GB stack size
+   ![image](https://user-images.githubusercontent.com/61575111/189493333-84440203-4031-4483-9da3-15db914f7ff6.png)
